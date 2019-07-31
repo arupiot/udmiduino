@@ -1,4 +1,4 @@
-# Tested with an Uno
+// Tested with an Uno
 
 #include <ArduinoJson.h>
 int count = 0;
@@ -13,6 +13,8 @@ void setup() {
   pinMode(2, INPUT_PULLUP);
   Serial.begin(9600);
 }
+
+// Might be good to use an interrupt for the 'light switch'
 
 void loop() {
 
@@ -34,7 +36,7 @@ void loop() {
   udmi_out["version"] = 1;
   udmi_out["timestamp"] = "0";
   udmi_out["points"]["lux_level"]["present_value"] = bob;
-  udmi_out["points"]["lum_state"]["present_value"] = digitalRead(3)*100;
+  udmi_out["points"]["lum_value"]["present_value"] = digitalRead(3)*100;
   udmi_out["points"]["dimmer_value"]["present_value"] = 255-bob;
 
   //  write udmi
