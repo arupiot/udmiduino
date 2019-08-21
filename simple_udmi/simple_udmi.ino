@@ -1,4 +1,6 @@
 // Tested with an Uno
+// Serial in == 't' will toggle the LED
+// Also, a button hooked up to pin 2 will toggle the LED
 
 #include <ArduinoJson.h>
 int count = 0;
@@ -19,6 +21,10 @@ void setup() {
 
 // TODO: Might be good to use an interrupt for the 'light switch'
 
+void toggleLED() {
+  digitalWrite(3, !digitalRead(3));  
+}
+
 void loop() {
 
   // Monitor inputs
@@ -30,7 +36,7 @@ void loop() {
   }
   
   if (bib == HIGH && bub == LOW && remote_override == false) {
-      digitalWrite(3, !digitalRead(3));
+    toggleLED();  
   }
   
   int bob = analogRead(0);
@@ -46,7 +52,10 @@ void loop() {
     // say what you got:
     Serial.print("I received: ");
     Serial.println(incoming_byte, DEC);
-    digitalWrite(3, !digitalRead(3));
+    if (incoming_byte == 't') {
+      toggleLED() ; 
+    }
+
   }
 
   // Generate output
