@@ -5,6 +5,9 @@ int count = 0;
 int x = 2000;
 int y = 500;
 int bub = 0;
+int incoming_byte = 0;
+boolean remote_override = false;
+StaticJsonDocument<200> udmi_out;
 
 void setup() {
   pinMode(3, OUTPUT);
@@ -14,13 +17,19 @@ void setup() {
   Serial.begin(9600);
 }
 
-// Might be good to use an interrupt for the 'light switch'
+// TODO: Might be good to use an interrupt for the 'light switch'
 
 void loop() {
 
+  // Monitor inputs
 
   int bib = digitalRead(2);
-  if (bib == HIGH && bub == LOW) {
+
+  if (bib == HIGH) {
+    remote_override = false; 
+  }
+  
+  if (bib == HIGH && bub == LOW && remote_override == false) {
       digitalWrite(3, !digitalRead(3));
   }
   
@@ -28,8 +37,20 @@ void loop() {
   analogWrite(5, 255-bob);
 
   bub = bib;
+
+  if (Serial.available() > 0) {
+    remote_override = true;
+    // read the incoming byte:
+    incoming_byte = Serial.read();
+
+    // say what you got:
+    Serial.print("I received: ");
+    Serial.println(incoming_byte, DEC);
+    digitalWrite(3, !digitalRead(3));
+  }
+
+  // Generate output
   
-  StaticJsonDocument<200> udmi_out;
   
   //  build udmi
 
