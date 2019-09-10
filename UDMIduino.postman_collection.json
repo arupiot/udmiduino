@@ -1,0 +1,241 @@
+{
+	"info": {
+		"_postman_id": "7f3776aa-fe80-4773-81bb-876afebc578f",
+		"name": "UDMIduino",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Ditto Health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/health",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UDMIduino policy",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "ditto",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "ditto",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"entries\": {\n        \"owner\": {\n            \"subjects\": {\n                \"nginx:ditto\": {\n                    \"type\": \"nginx basic auth user\"\n                }\n            },\n            \"resources\": {\n                \"thing:/\": {\n                    \"grant\": [\n                        \"READ\",\"WRITE\"\n                    ],\n                    \"revoke\": []\n                },\n                \"policy:/\": {\n                    \"grant\": [\n                        \"READ\",\"WRITE\"\n                    ],\n                    \"revoke\": []\n                },\n                \"message:/\": {\n                    \"grant\": [\n                        \"READ\",\"WRITE\"\n                    ],\n                    \"revoke\": []\n                }\n            }\n        }\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/2/policies/arup.eight.fitzroy:policy",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"2",
+						"policies",
+						"arup.eight.fitzroy:policy"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Modify connection",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "foobar",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "devops",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"targetActorSelection\": \"/system/sharding/connection\",\n    \"headers\": {\n        \"aggregate\": false\n    },\n    \"piggybackCommand\": {\n        \"type\": \"connectivity.commands:modifyConnection\",\n        \"connection\": {\n            \"id\": \"mqtt-udmiduino-0\",\n            \"connectionType\": \"mqtt\",\n            \"connectionStatus\": \"open\",\n            \"failoverEnabled\": true,\n            \"uri\": \"tcp://black-pearl.clients.global.arup.com:1883\",\n            \"sources\": [\n                {\n                \"addresses\": [\n                    \"arup-8-fitzroy-street/UDMIduino-000/events\"\n                ],\n                \"authorizationContext\": [\"nginx:ditto\"],\n                \"qos\": 0,\n                \"filters\": []\n                }\n            ],\n            \"targets\": [{\n                \"address\": \"arup-8-fitzroy-street/UDMIduino-000/lum-value\",\n                \"authorizationContext\": [\"nginx:ditto\"],\n                \"topics\": [\n                \"_/_/things/twin/events\",\n                \"_/_/things/live/messages\"\n                ],\n                \"qos\": 0\n            }],\n            \"mappingContext\": {\n                \"mappingEngine\": \"JavaScript\",\n                \"options\": {\n                    \"incomingScript\": \"function mapToDittoProtocolMsg(headers, textPayload, bytePayload, contentType) {     const thingId = `UDMIduino-000`;     const jsonString = String.fromCharCode.apply(null, new Uint8Array(bytePayload));     const jsonData = JSON.parse(jsonString);     const value = {         udmi: {             properties: {                 version: 1,                 timestamp: 0,                 points: {                     lux_level: {                         present_value: jsonData.points.lux_level.present_value                     },                     lum_value: {                         present_value: jsonData.points.lum_value.present_value                     },                     dimmer_value: {                         present_value: jsonData.points.dimmer_value.present_value                     }                 }             }         }     };      return Ditto.buildDittoProtocolMsg(         `arup.eight.fitzroy`,         thingId,         `things`,         `twin`,         `commands`,         `modify`,         `/features`,         headers,         value     ); }\"\n                }\n            }\n        }\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/devops/piggyback/connectivity",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"devops",
+						"piggyback",
+						"connectivity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create connection",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "foobar",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "devops",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"targetActorSelection\": \"/system/sharding/connection\",\n    \"headers\": {\n        \"aggregate\": false\n    },\n    \"piggybackCommand\": {\n        \"type\": \"connectivity.commands:createConnection\",\n        \"connection\": {\n            \"id\": \"mqtt-udmiduino-0\",\n            \"connectionType\": \"mqtt\",\n            \"connectionStatus\": \"open\",\n            \"failoverEnabled\": true,\n            \"uri\": \"tcp://10.8.0.62:1883\",\n           \"sources\": [\n                {\n                \"addresses\": [\n                    \"arup-8-fitzroy-street/UDMIduino-000/events\"\n                ],\n                \"authorizationContext\": [\"nginx:ditto\"],\n                \"qos\": 0,\n                \"filters\": []\n                }\n            ],\n            \"targets\": [{\n                \"address\": \"arup-8-fitzroy-street/UDMIduino-000/lum-value\",\n                \"authorizationContext\": [\"nginx:ditto\"],\n                \"topics\": [\n                \"_/_/things/twin/events\",\n                \"_/_/things/live/messages\"\n                ],\n                \"qos\": 0\n            }],\n            \"mappingContext\": {\n                \"mappingEngine\": \"JavaScript\",\n                \"options\": {\n                    \"incomingScript\": \"function mapToDittoProtocolMsg(headers, textPayload, bytePayload, contentType) {     const thingId = 'UDMIduino-000';     const jsonString = String.fromCharCode.apply(null, new Uint8Array(bytePayload));     const jsonData = JSON.parse(jsonString);     const value = {         udmi: {             properties: {                 version: 1,                 timestamp: 0,                 points: {                     lux_level: {                         present_value: jsonData.points.lux_level.present_value                     },                     lum_value: {                         present_value: jsonData.points.lum_value.present_value                     },                     dimmer_value: {                         present_value: jsonData.points.dimmer_value.present_value                     }                 }             }         }     };      return Ditto.buildDittoProtocolMsg(         'arup.eight.fitzroy',         thingId,         'things',         'twin',         'commands',         'modify',         '/features',         headers,         value     ); }\"\n                }\n            }\n        }\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/devops/piggyback/connectivity",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"devops",
+						"piggyback",
+						"connectivity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create UDMIduino",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "ditto",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "ditto",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"policyId\": \"arup.eight.fitzroy:policy\",\n    \"attributes\": {\n        \"manufacturer\": \"SmokeAndMirrors Co.\",\n        \"VIN\": \"101666\"\n    },\n    \"features\": {\n        \"udmi\": {\n            \"properties\": {\n                \"version\": 1,\n                \"timestamp\": \"0\",\n                \"points\": {\n                    \"lux_level\": {\n                        \"present_value\": 0\n                    },\n                    \"lum_value\": {\n                        \"present_value\": 0\n                    },\n                    \"dimmer_value\": {\n                        \"present_value\": 0\n                    }\n                }\n            }\n        }\n    }\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/2/things/arup.eight.fitzroy:UDMIduino-000",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"2",
+						"things",
+						"arup.eight.fitzroy:UDMIduino-000"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get things",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "ditto",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "ditto",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/2/search/things",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"2",
+						"search",
+						"things"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
