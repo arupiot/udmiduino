@@ -12,7 +12,7 @@ const httpOptions = {
 @Injectable()
 export class DittoServiceService {
   dittoURL: string = "http://localhost/api/2/";
-  ledToggleEndPoint: string = "things/arup.eight.fitzroy%3AUDMIduino-000";
+  ledToggleEndPoint: string = "things/open.iot%3AUDMIduino-000";
   toggleBody: any = {
     version: 1,
     timestamp: "0",
